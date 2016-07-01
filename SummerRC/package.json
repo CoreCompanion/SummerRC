@@ -12,8 +12,5 @@
 	"scripts": {
     "start": "node server.js"
 	},
-  "engines": {
-    "node": ">=4.3"
-  },
   "repository": "https://github.com/CoreCompanion/SummerRC/tree/master/SummerRC"
 }
