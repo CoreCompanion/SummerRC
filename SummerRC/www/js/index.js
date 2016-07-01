@@ -37,10 +37,10 @@ $(document).on('mobileinit', function () {
 
 
 $(document).ready(function () {
+    alert("device ready 111");
     FastClick.attach(document.body);
 
  //   Parse.initialize("oe3dboiG0RzJNULxKvdHYGWEb3Cq7mzHRC3Dwh6E", "cR8whmMjybMoXUqfAzhxUJSiBXw3QPt7ZB4bRGw8");
-
 
     $("#home_page").on('touchmove', function (ev) {
         ev.preventDefault();
@@ -57,6 +57,7 @@ $(document).ready(function () {
 
 function onDeviceReady() {
     // AJAX call to get JSON data containing the chapters and question	
+    alert("device ready 222");
     var path = window.location.href.replace('index.html', '');
     alert("device ready");
     $.ajax({
