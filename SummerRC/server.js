@@ -68,6 +68,8 @@ app.configure(function () {
     app.set('port', process.env.PORT || 3000);
     app.use(express.bodyParser()),
     app.use(express.static(path.join(__dirname, 'www')));
+    app.use(express.static(path.join(__dirname, 'www/js')));
+
 });
 
 app.get('/studentdetails', sd.findAll);
