@@ -58,6 +58,7 @@ $(document).ready(function () {
 function onDeviceReady() {
     // AJAX call to get JSON data containing the chapters and question	
     var path = window.location.href.replace('index.html', '');
+    alert("device ready");
     $.ajax({
         //   url: path + "sample.json",
         url: "http://e-ccss.com/sumrd.json",
