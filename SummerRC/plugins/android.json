@@ -12,6 +12,15 @@
         },
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.edMe.companionA1"
+        },
+        "cordova-plugin-camera": {
+            "PACKAGE_NAME": "com.edMe.companionB1"
+        },
+        "cordova-plugin-media-capture": {
+            "PACKAGE_NAME": "com.edMe.companionB1"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "com.edMe.companionB1"
         }
     },
     "dependent_plugins": {

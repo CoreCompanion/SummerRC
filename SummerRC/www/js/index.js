@@ -26,6 +26,8 @@ var varScore = 0;
 var varScore2 = 0;
 var storage = window.localStorage;
 var visitChap = 0;
+var correctAnsArr = [];
+var selectedAnsArr = [];
 
 
 
@@ -33,14 +35,12 @@ var visitChap = 0;
 $(document).on('mobileinit', function () {
     $.mobile.allowCrossDomainPages = true;
     $.support.cors = true;
+    onDeviceReady();
 });
 
 
 $(document).ready(function () {
-    alert("device ready 111");
     FastClick.attach(document.body);
-
- //   Parse.initialize("oe3dboiG0RzJNULxKvdHYGWEb3Cq7mzHRC3Dwh6E", "cR8whmMjybMoXUqfAzhxUJSiBXw3QPt7ZB4bRGw8");
 
     $("#home_page").on('touchmove', function (ev) {
         ev.preventDefault();
@@ -56,21 +56,28 @@ $(document).ready(function () {
 
 
 function onDeviceReady() {
+    FastClick.attach(document.body);
+
+    $("#home_page").on('touchmove', function (ev) {
+        ev.preventDefault();
+    });
+
+    // Disable touch scrolling on the questions page
+    $("#questions_page").on('touchmove', function (ev) {
+        ev.preventDefault();
+    });
+    $(document).on('deviceready', onDeviceReady);
     // AJAX call to get JSON data containing the chapters and question	
-    alert("device ready 222");
     var path = window.location.href.replace('index.html', '');
-    alert("device ready");
     $.ajax({
-        //   url: path + "sample.json",
-        url: "http://e-ccss.com/sumrd.json",
+        url: path + "sample.json",
+        // url: "http://e-ccss.com/sumrd.json",
         dataType: "json",
         crossDomain: true,
         xhrFields: {
             withCredentials: true
         }
     }).done(ajaxSuccess).fail(ajaxError);
-
-
 }
 
 
@@ -82,7 +89,6 @@ function ajaxSuccess(data) {
         $("#Log_in_btn").on('click', validateEmail);
         $("#start_btn").on('click', addAllChapters);
     }
-
 }
 
 
@@ -92,29 +98,21 @@ function ajaxError(error) {
 
 
 function addAllChapters() {
-
     if (visitChap == 0) {
-        // Reset all chapters in the list
         if ($("#chapters").children().length > 0) {
             $("#chapters li").remove();
         }
-        // Get the total chapters from the chapters array and assign it to totalChapters global variable
         totalChapters = jsonData.test.length;
         loop2 = 0;
         jsonObj = [];
 
         for (var i = 0; i < totalChapters; i++) {
-            // Create a new list item containing each chapters
             var chapter = "<li><a href='#sites_page' class='chapter' id='" + i + "' data-transition='flip'>" + jsonData.test[i].topicId + "</a></li>";
 
-            // Append each chapter to the chapters list
             $("#chapters").append(chapter);
         }
-
-        // Attach click event listener to all added chapters
         $("#chapters li a.chapter").on('click', addAllSites);
     }
-    // Refresh the listview widget
     $("#chapters").listview().listview('refresh');
 }
 
@@ -129,7 +127,6 @@ function addAllSites(ev) {
     ChapterID = $(this).attr('id');
     siteID = $(this).attr('id');
 
-    // Get the total answers for the selected question
     totalSites = jsonData.test[siteID].links.length;
 
     for (var i = 0; i < totalSites; i++) {
@@ -138,9 +135,7 @@ function addAllSites(ev) {
         label.textContent = desc;
         $("#sites").append(label);
         $("#sites").append('<br>');
-        // Create a new list item containing each answers
-        var ste = "<li><a href='#' onclick=\"window.open('"+jsonData.test[siteID].links[i].linkY+"', '_system');\">"+jsonData.test[siteID].links[i].linkY+"</a></li>";
-        // Append each answer to the answers list
+        var ste = "<li><a href='#' onclick=\"window.open('" + jsonData.test[siteID].links[i].linkY + "', '_system');\">" + jsonData.test[siteID].links[i].linkY + "</a></li>";
         $("#sites").append(ste);
         $("#sites").append('<br>');
         $("#sites").append('<br>');
@@ -155,33 +150,18 @@ function addAllSites(ev) {
 function addAllQuestions(ev) {
     $("#questions").html(ev.currentTarget.innerHTML);
     answerID = -1;
-    // Change the chapter title inside the <p> element
- //   $("#chapter").html(ev.currentTarget.innerHTML);
-
-    // Reset all questions in the list
     if ($("#questions").children().length > 0) {
         $("#questions li").remove();
     }
-
     $("#questions").empty();
-
     questionID = $(this).attr('id');
-
-    // Get the total answers for the selected question
     totalQuestions = jsonData.test[siteID].questions.length;
 
     for (var i = 0; i < totalQuestions; i++) {
-        // Create a new list item containing each answers
         var answer = "<li data-icon='false'><a href='#answers_page' class='answer' id='" + i + "' data-transition='flip'>" + jsonData.test[siteID].questions[i].question + "</a></li>";
-
-        // Append each answer to the answers list
         $("#questions").append(answer);
     }
-
-    // Attach click event listener to all added questions
     $("#questions li a.answer").on('click', addAllAnswers);
-
-    // Refresh the listview widget
     $("#questions").listview().listview('refresh');
 }
 
@@ -190,18 +170,15 @@ function addAllAnswers(ev) {
     if (answerID == -1) {
         answerID = $(this).attr('id');
     }
- //   alert(storage.getItem("Student"));
     $("#answer1").html(ev.currentTarget.innerHTML);
     $("#answers_page h1 #MyHeaderID").text("Question: #" + (parseInt(answerID, 10) + 1) + " of " + totalQuestions);
 
-    // Reset all questions in the list
     if ($("#answers").children().length > 0) {
         $("#answers li").remove();
     }
     $("#answers").empty();
     queFormat = jsonData.test[siteID].questions[answerID].questionFormat;
 
-    // Get the correct answer of the selected question
     correctAns = jsonData.test[siteID].questions[answerID].answerId;
     contextGrp = jsonData.test[siteID].questions[answerID].contextGroup1;
 
@@ -211,17 +188,39 @@ function addAllAnswers(ev) {
     }
 
     if (queFormat == 1 || queFormat == 2) {
-        // Get the total answers for the selected question
         var totalAnswers = jsonData.test[siteID].questions[answerID].answers.length;
+        var imgLink = jsonData.test[siteID].questions[answerID].imgLink;
+        if (!jQuery.isEmptyObject(imgLink)) {
+            $('#answers').append('<img src="' + jsonData.test[siteID].questions[answerID].imgLink + '" class="ImgNew" width="50%" height="10%"/>');
+        }
         for (var i = 0; i < totalAnswers; i++) {
-            // Create a new list item containing each answers
             var answer1 = "<li data-icon='false'><a href='#answers_page' class='answer1' id='" + i + "' data-answer='" + correctAns + "' >" + jsonData.test[siteID].questions[answerID].answers[i] + "</a></li>";
-            // Append each answer to the answers list
-
             $("#answers").append(answer1);
         }
-
         if (queFormat == 2) {
+            contextGrp2 = jsonData.test[siteID].questions[answerID].contextGroup2;
+            $("#answers").append('<br>');
+            var label = document.createElement('label');
+            subQuest = "Please enter the first 3 words of the sentence that shows your answer is correct.";
+            label.textContent = "Please enter the first 3 words of the sentence that shows your answer is correct.";
+            $("#answers").append(label);
+            var input = document.createElement('input');
+            input.name = "sub3";
+            input.type = "text";
+            $("#answers").append(input);
+        }
+    } else if (queFormat == 6 || queFormat == 8) {
+        var sc = 0;
+        // Get the total answers for the selected question
+        var totalAnswers = jsonData.test[siteID].questions[answerID].answers.length;
+        alert("totalAnswers is " + totalAnswers);
+        for (var i = 0; i < totalAnswers; i++) {
+            // Create a new list item containing each answers
+            var label = $('<label for=' + i + '>' + jsonData.test[siteID].questions[answerID].answers[i] + '<input type="checkbox" name="chkBox"  id=' + i + ' />' + '</label>');
+            // Append each answer to the answers list
+            $("#answers").append(label);
+        }
+        if (queFormat == 8) {
             contextGrp2 = jsonData.test[siteID].questions[answerID].contextGroup2;
             $("#answers").append('<br>');
             var label = document.createElement('label');
@@ -238,7 +237,7 @@ function addAllAnswers(ev) {
         input.name = "sub1";
         input.type = "text";
         $("#answers").append(input);
-    } else if (queFormat == 4) {
+    } else if (queFormat == 4 || queFormat == 7) {
         contextGrp2 = jsonData.test[siteID].questions[answerID].contextGroup2;
         var input = document.createElement('input');
         input.name = "sub1";
@@ -256,8 +255,34 @@ function addAllAnswers(ev) {
         input1.name = "sub2";
         input1.type = "text";
         $("#answers").append(input1);
+    } else if (queFormat == 9) {
+        $("#answers").append('<a id="recRec">Record Voice</a>');
+        $("#answers").append('</br><input type="button" value="Pick" id="pick" /></br>');
+    } else if (queFormat == 10) {
+        $("#answers").append('<a id="takephoto">Add Photo</a>');
+        $("#answers").append('</br><input type="button" value="Pick" id="pick" /></br>');
     }
-    $("#answers li a.answer1").on('click', testClick);
+
+    $("#pick").click(function () {
+        pick();
+    });
+    $("#takephoto").click(function () {
+
+        memType = "pic";
+        memDate = new Date();
+        memId = memDate.toString();
+
+        navigator.device.capture.captureImage(captureSuccess, captureError, { limit: 1 });
+    });
+    $("#recRec").click(function () {
+        memType = "aud";
+        memDate = new Date();
+        memId = memDate.toString();
+        navigator.device.capture.captureAudio(captureSuccess, captureError);
+    });
+    if (queFormat == 1 || queFormat == 2 || queFormat == 3 || queFormat == 4 || queFormat == 5) {
+        $("#answers li a.answer1").on('click', testClick);
+    }
     if (loop2 == 0) {
         $('.showNxtPage').on('click', nextQuestion);
     }
@@ -270,8 +295,13 @@ function testClick() {
     selectedAnswer = $(this).attr('id');
 }
 
-
 function checkOption() {
+    if (selectedAnswer == correctAns) {
+        varScore = 1;
+    }
+}
+
+function checkOptionsMulti() {
     if (selectedAnswer == correctAns) {
         varScore = 1;
     }
@@ -339,6 +369,16 @@ function checkAnswer() {
 
 
 function nextQuestion(ev) {
+    if (queFormat == 6) {
+        var k = 0;
+        $('#answers :checked').each(function () {
+
+            selectedAnsArr.push($(this).attr('id'));
+            alert("selectedAnsArr[k] " + selectedAnsArr[k]);
+            k++;
+        });
+    }
+
     loop2 = loop2 + 1;
     if (boolCheck == 0) {
         checkAnswer();
@@ -403,12 +443,35 @@ function nextQuestion(ev) {
                 input.name = "sub3";
                 $("#answers_next").append(input);
             }
+        } else if (queFormat == 6 || queFormat == 8) {
+            var sc = 0;
+            // Get the total answers for the selected question
+            var totalAnswers = jsonData.test[siteID].questions[answerID].answers.length;
+            alert("totalAnswers is " + totalAnswers);
+            for (var i = 0; i < totalAnswers; i++) {
+                // Create a new list item containing each answers
+                var label = $('<label for=' + i + '>' + jsonData.test[siteID].questions[answerID].answers[i] + '<input type="checkbox" name="chkBox"  id=' + i + ' />' + '</label>');
+                // Append each answer to the answers list
+                $("#answers").append(label);
+            }
+            if (queFormat == 8) {
+                contextGrp2 = jsonData.test[siteID].questions[answerID].contextGroup2;
+                $("#answers").append('<br>');
+                var label = document.createElement('label');
+                subQuest = "Please enter the first 3 words of the sentence that shows your answer is correct.";
+                label.textContent = "Please enter the first 3 words of the sentence that shows your answer is correct.";
+                $("#answers").append(label);
+                var input = document.createElement('input');
+                input.name = "sub3";
+                input.type = "text";
+                $("#answers").append(input);
+            }
         } else if (queFormat == 3 || queFormat == 5) {
             var input = document.createElement('input');
             input.name = "sub1";
             input.type = "text";
             $("#answers_next").append(input);
-        } else if (queFormat == 4) {
+        } else if (queFormat == 4 || queFormat == 7) {
             contextGrp2 = jsonData.test[siteID].questions[answerID].contextGroup2;
             var input = document.createElement('input');
             input.name = "sub1";
@@ -469,15 +532,40 @@ function validateEmail() {
         $("#home1").html("Invalid email");
         event.preventDefault();
     }
-   
+
 }
 
-//function calculateScores() {
+var captureSuccess = function (mediaFiles) {
+    var i, path, len;
+    for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+        path = mediaFiles[i].fullPath;
 
-//    for (var j = 0; j < jsonObj.length; j++) {
-//        var score = "<li data-icon='false'>"+jsonObj[j]+"</li>";
-//    }
-//    $("#scores").append(score);
+        //alert("path: "+path);
+        memTempObj = { 'memId': memId, 'memAdress': path, 'memDate': memDate, 'memType': memType };
 
-//}
+        $("#my_image").attr("src", mediaFiles[i].fullPath);
+
+        memArray[memArray.length] = jQuery.extend({}, memTempObj);
+        //alert("memArray: just added" + memArray.length);
+        jsonObj.setItem("memArray", JSON.stringify(memArray));
+        showView();
+
+    }
+};
+
+// capture error callback
+var captureError = function (error) {
+    navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
+};
+
+function pick() {
+    navigator.camera.getPicture(onSuccess, onFail, { quality: 50, destinationType: Camera.DestinationType.DATA_URL, sourceType: Camera.PictureSourceType.PHOTOLIBRARY });
+
+    function onSuccess(imageData) { var image = document.getElementById('myImage'); image.src = "data:image/jpeg;base64," + imageData; }
+
+    function onFail(message) {
+        alert('Failed because: ' + message);
+    }
+}
+
 

@@ -16,6 +16,7 @@
 			"questions": [
 				{
 					"queId": "Aaa1",
+					"imgLink" : "http://eskipaper.com/images/sunny-day-3.jpg",
 					"question": "What is this chapter mainly about?",
 					"answerId": "1",
 					"questionFormat": "1",
@@ -135,25 +136,41 @@
 						"Malfoy"
 					]
 				},
-				{
-					"queId": "Aaa4",
+        {
+          "queId": "Aaa4",
+          "question": "What happens when Lucius Malfoy throws the sock at Dobby?",
+          "answerId": "",
+          "questionFormat": "4",
+          "answers": [ ],
+          "contextGroup1": "7Ev",
+          "contextGroup2": "7De",
+          "subQuestion": "Write the first 3 words of a sentence that shows your answer is correct.",
+          "keys1": [
+            "free"
+          ],
+          "keys2": [
+            "Master threw it",
+            "Dobby is free"
+          ]
+        },
+        {
+					"queId": "Aaa5",
 					"question": "What happens when Lucius Malfoy throws the sock at Dobby?",
-					"answerId": "",
-					"questionFormat": "4",
-					"answers": [ ],
-					"contextGroup1": "7Ev",
-					"contextGroup2": "7De",
-					"subQuestion": "Write the first 3 words of a sentence that shows your answer is correct.",
-					"keys1": [
-						"free"
-					],
-					"keys2": [
-						"Master threw it",
+					"answerId": "0,2",
+					"questionFormat": "6",
+          "answers": [
+            "free",
+            "Master threw it",
 						"Dobby is free"
-					]
+          ],
+					"contextGroup1": "7Ev",
+					"contextGroup2": "",
+					"subQuestion": "",
+          "keys1": [],
+					"keys2": []
 				}
 			]
-        }
+    }
 		
     ]
 }
